@@ -1,4 +1,4 @@
-name: android build scripts
+name: android 16kb build scripts
 
 on:
   workflow_dispatch: # Allows manual triggering, which will create a release
@@ -12,6 +12,9 @@ jobs:
   build-main-on-linux:
     name: android main on linux (ndk-r25-16k)
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
     defaults:
       run:
         shell: bash
@@ -35,6 +38,8 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
+        env:
+          GITHUB_PUBLISH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./android.sh -d --enable-libvpx --enable-libwebp
       - name: prepare and upload main aar
         run: |
